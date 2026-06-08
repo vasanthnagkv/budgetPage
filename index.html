@@ -354,17 +354,17 @@
           </tr>
           <tr>
             <td>Total Investments</td>
-            <td data-label="Budget">1,283.00</td>
+            <td data-label="Budget">1,483.00</td>
             <td data-label="Spent" id="sum-investments-spent">0.00</td>
-            <td data-label="Remaining" id="sum-investments-rem" class="remaining ok">1,283.00</td>
-            <td data-label="% Salary">35.5%</td>
+            <td data-label="Remaining" id="sum-investments-rem" class="remaining ok">1,483.00</td>
+            <td data-label="% Salary">41.0%</td>
           </tr>
           <tr class="bold-row surplus-row">
             <td>Remaining Surplus</td>
-            <td data-label="Budget">450.27</td>
+            <td data-label="Budget">250.27</td>
             <td data-label="Spent">—</td>
-            <td data-label="Remaining" id="sum-surplus" style="color:#27ae60;font-weight:700;">450.27</td>
-            <td data-label="% Salary"><span class="pill pill-blue" id="sum-surplus-pct">12.4%</span></td>
+            <td data-label="Remaining" id="sum-surplus" style="color:#27ae60;font-weight:700;">250.27</td>
+            <td data-label="% Salary"><span class="pill pill-blue" id="sum-surplus-pct">6.9%</span></td>
           </tr>
         </tbody>
       </table>
@@ -515,6 +515,13 @@
             <td data-label="% Salary">2.8%</td>
           </tr>
           <tr>
+            <td>Scalable Capital (Personal)</td>
+            <td data-label="Budget">200.00</td>
+            <td data-label="Spent"><input class="spend-input invest-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="200.00" /></td>
+            <td data-label="Remaining" class="remaining ok">200.00</td>
+            <td data-label="% Salary">5.5%</td>
+          </tr>
+          <tr>
             <td>Gold</td>
             <td data-label="Budget">100.00</td>
             <td data-label="Spent"><input class="spend-input invest-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="100.00" /></td>
@@ -523,10 +530,10 @@
           </tr>
           <tr class="bold-row">
             <td>Total Investments <span class="warn-badge" id="inv-warn">⚠ Over!</span></td>
-            <td data-label="Budget">1,283.00</td>
+            <td data-label="Budget">1,483.00</td>
             <td data-label="Spent" id="inv-spent-total">0.00</td>
-            <td data-label="Remaining" id="inv-remaining-total" class="remaining ok">1,283.00</td>
-            <td data-label="% Salary"><span class="pill pill-green">35.5%</span></td>
+            <td data-label="Remaining" id="inv-remaining-total" class="remaining ok">1,483.00</td>
+            <td data-label="% Salary"><span class="pill pill-green">41.0%</span></td>
           </tr>
         </tbody>
       </table>
@@ -538,8 +545,8 @@
 <script>
   const SALARY         = 3619.00;
   const EXPENSE_BUDGET = 1885.73;
-  const INVEST_BUDGET  = 1283.00;
-  const BASE_SURPLUS   = 450.27;
+  const INVEST_BUDGET  = 1483.00;
+  const BASE_SURPLUS   = 250.27;
 
   /* ── Math expression evaluator (safe: only digits and operators) ── */
   function evalExpr(raw) {
