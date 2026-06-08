@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Overview</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      padding: 40px 20px;
+    }
+
+    /* ── Top toolbar (outside page card) ── */
+    .toolbar {
+      max-width: 980px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .month-select {
+      padding: 8px 14px;
+      border: 1.5px solid #c8d8ea;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      color: #2d4a6b;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      outline: none;
+    }
+    .month-select:focus { border-color: #4a90c4; }
+
+/* ── Page card ── */
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #2d4a6b;
+      color: #fff;
+      text-align: center;
+      padding: 32px 24px 24px;
+      position: relative;
+    }
+    .header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.5px; }
+    .header p  { font-size: 0.95rem; color: #c8d8ea; margin-top: 6px; }
+    #header-month { color: #fff; font-weight: 600; }
+
+    /* ── Sections ── */
+    .section { padding: 32px 36px; }
+    .section + .section { border-top: 1px solid #eee; }
+
+    .section-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid currentColor;
+    }
+    .section-title.blue  { color: #4a90c4; border-color: #4a90c4; }
+    .section-title.red   { color: #c0392b; border-color: #c0392b; }
+    .section-title.green { color: #27ae60; border-color: #27ae60; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+
+    thead tr { color: #fff; }
+    thead th { padding: 12px 16px; text-align: left; font-weight: 600; }
+    thead th:not(:first-child) { text-align: right; }
+
+    tbody tr { border-bottom: 1px solid #eee; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody td { padding: 10px 16px; }
+    tbody td:not(:first-child) { text-align: right; }
+
+    tr.bold-row td { font-weight: 700; }
+
+    .table-blue  thead { background: #4a90c4; }
+    .table-red   thead { background: #c0392b; }
+    .table-green thead { background: #27ae60; }
+
+    /* ── Pill badges ── */
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .pill-blue  { background: #4a90c4; }
+    .pill-red   { background: #c0392b; }
+    .pill-green { background: #27ae60; }
+
+    /* ── Spending input ── */
+    .spend-input {
+      width: 100px;
+      padding: 5px 8px;
+      border: 1.5px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      text-align: right;
+      color: #333;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .spend-input:focus { border-color: #4a90c4; }
+    .spend-input.over  { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
+
+    td.remaining { font-weight: 600; }
+    td.remaining.ok   { color: #27ae60; }
+    td.remaining.over { color: #c0392b; }
+    td.remaining.zero { color: #888; }
+
+    tr.surplus-row td { background: #f0f7ff; }
+
+    .warn-badge {
+      display: none;
+      font-size: 0.75rem;
+      color: #c0392b;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+    .warn-badge.visible { display: inline; }
+
+    /* ── Save indicator ── */
+    .save-indicator {
+      font-size: 0.8rem;
+      color: #27ae60;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.4s;
+      white-space: nowrap;
+    }
+    .save-indicator.show { opacity: 1; }
+
+    .toolbar-left  { display: flex; align-items: center; gap: 10px; }
+    .toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+    .save-btn {
+      padding: 8px 20px;
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .save-btn:hover { background: #219a52; }
+    .save-btn svg { width: 15px; height: 15px; fill: #fff; }
+
+    /* ── Print / PDF styles ── */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .toolbar { display: none; }
+      .page { box-shadow: none; border-radius: 0; max-width: 100%; }
+
+      /* replace inputs with plain text */
+      .spend-input { border: none; background: transparent; padding: 0; width: auto; }
+
+      /* ensure colors print */
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <select class="month-select" id="month-picker">
+      <option value="January 2026">January 2026</option>
+      <option value="February 2026">February 2026</option>
+      <option value="March 2026">March 2026</option>
+      <option value="April 2026">April 2026</option>
+      <option value="May 2026">May 2026</option>
+      <option value="June 2026" selected>June 2026</option>
+      <option value="July 2026">July 2026</option>
+      <option value="August 2026">August 2026</option>
+      <option value="September 2026">September 2026</option>
+      <option value="October 2026">October 2026</option>
+      <option value="November 2026">November 2026</option>
+      <option value="December 2026">December 2026</option>
+    </select>
+    <span class="save-indicator" id="save-indicator">✓ Saved</span>
+  </div>
+
+  <div class="toolbar-right">
+    <button class="save-btn" onclick="saveData()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm3-10H5V5h10v4z"/>
+      </svg>
+      Save
+    </button>
+  </div>
+</div>
+
+<!-- Page card -->
+<div class="page" id="report-page">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Financial Overview</h1>
+    <p>Monthly Budget Breakdown &mdash; <span id="header-month">June 2026</span></p>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-title blue">Summary</div>
+    <table class="table-blue">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Budget (€)</th>
+          <th>Spent (€)</th>
+          <th>Remaining (€)</th>
+          <th>% of Salary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="bold-row">
+          <td>Total Gross Salary</td>
+          <td>3,619.00</td>
+          <td>—</td>
+          <td>—</td>
+          <td>100.0%</td>
+        </tr>
+        <tr>
+          <td>Total Expenses</td>
+          <td>1,885.73</td>
+          <td id="sum-expenses-spent">0.00</td>
+          <td id="sum-expenses-rem" class="remaining ok">1,885.73</td>
+          <td>51.9%</td>
+        </tr>
+        <tr>
+          <td>Total Investments</td>
+          <td>1,283.00</td>
+          <td id="sum-investments-spent">0.00</td>
+          <td id="sum-investments-rem" class="remaining ok">1,283.00</td>
+          <td>35.5%</td>
+        </tr>
+        <tr class="bold-row surplus-row">
+          <td>Remaining Surplus</td>
+          <td>450.27</td>
+          <td>—</td>
+          <td id="sum-surplus" style="color:#27ae60; font-weight:700;">450.27</td>
+          <td><span class="pill pill-blue" id="sum-surplus-pct">12.6%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Expenses -->
+  <div class="section">
+    <div class="section-title red">Expenses</div>
+    <table class="table-red">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Budget (€)</th>
+          <th>Spent (€)</th>
+          <th>Remaining (€)</th>
+          <th>% of Salary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Rent (incl. Utilities &amp; Internet)</td>
+          <td>692.73</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="692.73" /></td>
+          <td class="remaining ok">692.73</td>
+          <td>19.0%</td>
+        </tr>
+        <tr>
+          <td>Trip Account</td>
+          <td>350.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="350.00" /></td>
+          <td class="remaining ok">350.00</td>
+          <td>9.7%</td>
+        </tr>
+        <tr>
+          <td>Groceries</td>
+          <td>250.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="250.00" /></td>
+          <td class="remaining ok">250.00</td>
+          <td>6.9%</td>
+        </tr>
+        <tr>
+          <td>Car EMI</td>
+          <td>150.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="150.00" /></td>
+          <td class="remaining ok">150.00</td>
+          <td>4.1%</td>
+        </tr>
+        <tr>
+          <td>Joint Account</td>
+          <td>120.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="120.00" /></td>
+          <td class="remaining ok">120.00</td>
+          <td>3.3%</td>
+        </tr>
+        <tr>
+          <td>Gym Fee</td>
+          <td>113.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="113.00" /></td>
+          <td class="remaining ok">113.00</td>
+          <td>3.1%</td>
+        </tr>
+        <tr>
+          <td>Credit Card (Unplanned)</td>
+          <td>80.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="80.00" /></td>
+          <td class="remaining ok">80.00</td>
+          <td>2.2%</td>
+        </tr>
+        <tr>
+          <td>Petrol</td>
+          <td>50.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="50.00" /></td>
+          <td class="remaining ok">50.00</td>
+          <td>1.4%</td>
+        </tr>
+        <tr>
+          <td>Bus Pass</td>
+          <td>47.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="47.00" /></td>
+          <td class="remaining ok">47.00</td>
+          <td>1.3%</td>
+        </tr>
+        <tr>
+          <td>Claude Subscription</td>
+          <td>20.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="20.00" /></td>
+          <td class="remaining ok">20.00</td>
+          <td>0.6%</td>
+        </tr>
+        <tr>
+          <td>SIM Card</td>
+          <td>10.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="10.00" /></td>
+          <td class="remaining ok">10.00</td>
+          <td>0.3%</td>
+        </tr>
+        <tr>
+          <td>Spotify</td>
+          <td>3.00</td>
+          <td><input class="spend-input expense-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="3.00" /></td>
+          <td class="remaining ok">3.00</td>
+          <td>0.1%</td>
+        </tr>
+        <tr class="bold-row">
+          <td>Total Expenses <span class="warn-badge" id="exp-warn">⚠ Over budget!</span></td>
+          <td>1,885.73</td>
+          <td id="exp-spent-total">0.00</td>
+          <td id="exp-remaining-total" class="remaining ok">1,885.73</td>
+          <td><span class="pill pill-red">51.9%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Investments -->
+  <div class="section">
+    <div class="section-title green">Investments</div>
+    <table class="table-green">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Budget (€)</th>
+          <th>Spent (€)</th>
+          <th>Remaining (€)</th>
+          <th>% of Salary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Plot EMI</td>
+          <td>1,083.00</td>
+          <td><input class="spend-input invest-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="1083.00" /></td>
+          <td class="remaining ok">1,083.00</td>
+          <td>29.9%</td>
+        </tr>
+        <tr>
+          <td>S&amp;P 500 (Scalable Capital)</td>
+          <td>100.00</td>
+          <td><input class="spend-input invest-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
+          <td class="remaining ok">100.00</td>
+          <td>2.8%</td>
+        </tr>
+        <tr>
+          <td>Gold</td>
+          <td>100.00</td>
+          <td><input class="spend-input invest-input" type="number" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
+          <td class="remaining ok">100.00</td>
+          <td>2.8%</td>
+        </tr>
+        <tr class="bold-row">
+          <td>Total Investments <span class="warn-badge" id="inv-warn">⚠ Over budget!</span></td>
+          <td>1,283.00</td>
+          <td id="inv-spent-total">0.00</td>
+          <td id="inv-remaining-total" class="remaining ok">1,283.00</td>
+          <td><span class="pill pill-green">35.5%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div><!-- /.page -->
+
+<script>
+  const SALARY        = 3619.00;
+  const EXPENSE_BUDGET = 1885.73;
+  const INVEST_BUDGET  = 1283.00;
+  const BASE_SURPLUS   = 450.27;
+
+  /* ── Formatting ── */
+  function fmt(n) {
+    return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function setRemaining(cell, rem) {
+    cell.className = 'remaining';
+    if (rem < 0) {
+      cell.classList.add('over');
+      cell.textContent = '−' + fmt(Math.abs(rem));
+    } else if (rem === 0) {
+      cell.classList.add('zero');
+      cell.textContent = fmt(rem);
+    } else {
+      cell.classList.add('ok');
+      cell.textContent = fmt(rem);
+    }
+  }
+
+  /* ── Recalc one group of inputs ── */
+  function recalcGroup(inputClass, ids, budgetTotal) {
+    const inputs = document.querySelectorAll('.' + inputClass);
+    let totalSpent = 0;
+
+    inputs.forEach(input => {
+      const budget = parseFloat(input.dataset.budget);
+      const spent  = parseFloat(input.value) || 0;
+      totalSpent  += spent;
+      const remCell = input.closest('tr').querySelector('.remaining');
+      setRemaining(remCell, budget - spent);
+      input.classList.toggle('over', spent > budget);
+    });
+
+    const totalRem = budgetTotal - totalSpent;
+
+    document.getElementById(ids.spentTotal).textContent = fmt(totalSpent);
+    setRemaining(document.getElementById(ids.remTotal), totalRem);
+
+    const warn = document.getElementById(ids.warn);
+    warn.classList.toggle('visible', totalRem < 0);
+
+    document.getElementById(ids.summarySpent).textContent = fmt(totalSpent);
+    setRemaining(document.getElementById(ids.summaryRem), totalRem);
+
+    return totalSpent;
+  }
+
+  function recalcSurplus(expSpent, invSpent) {
+    const surplus = SALARY - expSpent - invSpent;
+    const pct     = ((surplus / SALARY) * 100).toFixed(1) + '%';
+    const cell    = document.getElementById('sum-surplus');
+    cell.textContent  = fmt(surplus);
+    cell.style.color  = surplus >= BASE_SURPLUS ? '#27ae60' : surplus >= 0 ? '#e67e22' : '#c0392b';
+    document.getElementById('sum-surplus-pct').textContent = pct;
+  }
+
+  function recalc() {
+    const expSpent = recalcGroup('expense-input', {
+      spentTotal:  'exp-spent-total',
+      remTotal:    'exp-remaining-total',
+      warn:        'exp-warn',
+      summarySpent:'sum-expenses-spent',
+      summaryRem:  'sum-expenses-rem'
+    }, EXPENSE_BUDGET);
+
+    const invSpent = recalcGroup('invest-input', {
+      spentTotal:  'inv-spent-total',
+      remTotal:    'inv-remaining-total',
+      warn:        'inv-warn',
+      summarySpent:'sum-investments-spent',
+      summaryRem:  'sum-investments-rem'
+    }, INVEST_BUDGET);
+
+    recalcSurplus(expSpent, invSpent);
+  }
+
+  document.querySelectorAll('.spend-input').forEach(el => el.addEventListener('input', recalc));
+
+  /* ── Month picker ── */
+  document.getElementById('month-picker').addEventListener('change', function () {
+    document.getElementById('header-month').textContent = this.value;
+    loadData(this.value);
+  });
+
+  /* ── Save / Load (localStorage, keyed by month) ── */
+  function storageKey(month) {
+    return 'budget_' + month.replace(' ', '_');
+  }
+
+  function saveData() {
+    const month  = document.getElementById('month-picker').value;
+    const inputs = document.querySelectorAll('.spend-input');
+    const values = [];
+    inputs.forEach(input => values.push(input.value));
+    localStorage.setItem(storageKey(month), JSON.stringify(values));
+
+    // Flash "Saved" indicator
+    const ind = document.getElementById('save-indicator');
+    ind.classList.add('show');
+    setTimeout(() => ind.classList.remove('show'), 2000);
+  }
+
+  function loadData(month) {
+    const raw = localStorage.getItem(storageKey(month));
+    if (!raw) return;
+    const values = JSON.parse(raw);
+    const inputs = document.querySelectorAll('.spend-input');
+    inputs.forEach((input, i) => {
+      input.value = values[i] || '';
+    });
+    recalc();
+  }
+
+  /* Auto-save on every input change */
+  document.querySelectorAll('.spend-input').forEach(el => el.addEventListener('input', () => {
+    saveData();
+  }));
+
+  /* Load saved data for the default month on page open */
+  loadData(document.getElementById('month-picker').value);
+
+</script>
+</body>
+</html>
