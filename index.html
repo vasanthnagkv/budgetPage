@@ -141,15 +141,17 @@
     .table-green thead { background: #27ae60; }
     .table-orange thead { background: #e67e22; }
 
-    /* ── Spend input ── */
+    /* ── Spend input (all amount fields share math-input base) ── */
     .spend-input {
       width: 100px; padding: 5px 8px;
       border: 1.5px solid #ddd; border-radius: 6px;
       font-size: 0.9rem; text-align: right; color: #333;
-      outline: none; transition: border-color 0.2s;
+      outline: none; transition: border-color 0.2s; font-family: inherit;
     }
     .spend-input:focus { border-color: #4a90c4; }
     .spend-input.over  { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
+    .spend-input.expr  { color: #7f5af0; border-color: #7f5af0; }
+    .spend-input.error { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
 
     td.remaining { font-weight: 600; }
     td.remaining.ok   { color: #27ae60; }
@@ -162,37 +164,50 @@
     }
     .warn-badge.visible { display: inline; }
 
-    /* ── Unplanned section ── */
-    .unplanned-list { margin-bottom: 12px; }
+    /* ── Unplanned rows (inside Expenses section) ── */
+    .unplanned-divider {
+      display: flex; align-items: center; gap: 10px;
+      margin: 12px 0 10px;
+      font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px; color: #e67e22;
+    }
+    .unplanned-divider::before, .unplanned-divider::after {
+      content: ''; flex: 1; height: 1px; background: #f5dbc0;
+    }
+
+    .unplanned-list { margin-bottom: 8px; }
 
     .unplanned-row {
       display: flex; align-items: center; gap: 8px;
-      padding: 8px 0; border-bottom: 1px solid #f0f0f0;
+      padding: 7px 0; border-bottom: 1px solid #fef0e0;
     }
     .unplanned-row:last-child { border-bottom: none; }
 
     .unplanned-desc {
       flex: 1; min-width: 0;
-      padding: 7px 10px;
+      padding: 6px 10px;
       border: 1.5px solid #ddd; border-radius: 6px;
       font-size: 0.9rem; color: #333; outline: none;
     }
     .unplanned-desc:focus { border-color: #e67e22; }
 
-    .unplanned-amt {
+    /* math-capable text input for amounts */
+    .math-input {
       width: 110px;
-      padding: 7px 10px;
+      padding: 6px 10px;
       border: 1.5px solid #ddd; border-radius: 6px;
       font-size: 0.9rem; text-align: right; color: #333; outline: none;
+      font-family: inherit;
     }
-    .unplanned-amt:focus { border-color: #e67e22; }
+    .math-input:focus { border-color: #4a90c4; }
+    .math-input.expr  { color: #7f5af0; border-color: #7f5af0; }
+    .math-input.error { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
 
     .del-btn {
       background: none; border: none; cursor: pointer;
-      color: #c0392b; font-size: 1.2rem; line-height: 1;
+      color: #c0392b; font-size: 1.3rem; line-height: 1;
       padding: 4px 6px; border-radius: 4px;
-      -webkit-tap-highlight-color: transparent;
-      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent; flex-shrink: 0;
     }
     .del-btn:hover { background: #fff0f0; }
 
@@ -202,7 +217,7 @@
       color: #e67e22; border-radius: 8px;
       padding: 8px 14px; font-size: 0.9rem; font-weight: 600;
       cursor: pointer; width: 100%; justify-content: center;
-      margin-top: 10px;
+      margin-top: 6px;
       -webkit-tap-highlight-color: transparent;
     }
     .add-row-btn:hover { background: #fff8f0; }
@@ -257,10 +272,11 @@
       tr.surplus-row { background: #f0f7ff; }
 
       .spend-input { width: 120px; padding: 8px 10px; font-size: 1rem; border-radius: 8px; }
+      .math-input  { width: 120px; padding: 8px 10px; font-size: 1rem; border-radius: 8px; }
 
       .unplanned-row { flex-wrap: wrap; }
       .unplanned-desc { min-width: 100%; }
-      .unplanned-amt  { flex: 1; }
+      .math-input  { flex: 1; }
     }
   </style>
 </head>
@@ -343,13 +359,6 @@
             <td data-label="Remaining" id="sum-investments-rem" class="remaining ok">1,283.00</td>
             <td data-label="% Salary">35.5%</td>
           </tr>
-          <tr>
-            <td>Unplanned Expenses</td>
-            <td data-label="Budget">—</td>
-            <td data-label="Spent" id="sum-unplanned-spent">0.00</td>
-            <td data-label="Remaining">—</td>
-            <td data-label="% Salary" id="sum-unplanned-pct">0.0%</td>
-          </tr>
           <tr class="bold-row surplus-row">
             <td>Remaining Surplus</td>
             <td data-label="Budget">450.27</td>
@@ -377,84 +386,84 @@
           <tr>
             <td>Rent (incl. Utilities &amp; Internet)</td>
             <td data-label="Budget">692.73</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="692.73" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="692.73" /></td>
             <td data-label="Remaining" class="remaining ok">692.73</td>
             <td data-label="% Salary">19.1%</td>
           </tr>
           <tr>
             <td>Trip Account</td>
             <td data-label="Budget">350.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="350.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="350.00" /></td>
             <td data-label="Remaining" class="remaining ok">350.00</td>
             <td data-label="% Salary">9.7%</td>
           </tr>
           <tr>
             <td>Groceries</td>
             <td data-label="Budget">250.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="250.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="250.00" /></td>
             <td data-label="Remaining" class="remaining ok">250.00</td>
             <td data-label="% Salary">6.9%</td>
           </tr>
           <tr>
             <td>Car EMI</td>
             <td data-label="Budget">150.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="150.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="150.00" /></td>
             <td data-label="Remaining" class="remaining ok">150.00</td>
             <td data-label="% Salary">4.1%</td>
           </tr>
           <tr>
             <td>Joint Account</td>
             <td data-label="Budget">120.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="120.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="120.00" /></td>
             <td data-label="Remaining" class="remaining ok">120.00</td>
             <td data-label="% Salary">3.3%</td>
           </tr>
           <tr>
             <td>Gym Fee</td>
             <td data-label="Budget">113.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="113.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="113.00" /></td>
             <td data-label="Remaining" class="remaining ok">113.00</td>
             <td data-label="% Salary">3.1%</td>
           </tr>
           <tr>
             <td>Credit Card (Unplanned)</td>
             <td data-label="Budget">80.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="80.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="80.00" /></td>
             <td data-label="Remaining" class="remaining ok">80.00</td>
             <td data-label="% Salary">2.2%</td>
           </tr>
           <tr>
             <td>Petrol</td>
             <td data-label="Budget">50.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="50.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="50.00" /></td>
             <td data-label="Remaining" class="remaining ok">50.00</td>
             <td data-label="% Salary">1.4%</td>
           </tr>
           <tr>
             <td>Bus Pass</td>
             <td data-label="Budget">47.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="47.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="47.00" /></td>
             <td data-label="Remaining" class="remaining ok">47.00</td>
             <td data-label="% Salary">1.3%</td>
           </tr>
           <tr>
             <td>Claude Subscription</td>
             <td data-label="Budget">20.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="20.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="20.00" /></td>
             <td data-label="Remaining" class="remaining ok">20.00</td>
             <td data-label="% Salary">0.6%</td>
           </tr>
           <tr>
             <td>SIM Card</td>
             <td data-label="Budget">10.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="10.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="10.00" /></td>
             <td data-label="Remaining" class="remaining ok">10.00</td>
             <td data-label="% Salary">0.3%</td>
           </tr>
           <tr>
             <td>Spotify</td>
             <td data-label="Budget">3.00</td>
-            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="3.00" /></td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="3.00" /></td>
             <td data-label="Remaining" class="remaining ok">3.00</td>
             <td data-label="% Salary">0.1%</td>
           </tr>
@@ -467,6 +476,15 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- Unplanned expenses live inside Expenses -->
+      <div class="unplanned-divider">Unplanned</div>
+      <div class="unplanned-list" id="unplanned-list"></div>
+      <button class="add-row-btn" onclick="addUnplannedRow()">+ Add unplanned expense</button>
+      <div class="unplanned-total-row">
+        <span class="unplanned-total-label">Total Unplanned</span>
+        <span class="unplanned-total-amt" id="unplanned-total">€ 0.00</span>
+      </div>
     </div>
   </div>
 
@@ -485,21 +503,21 @@
           <tr>
             <td>Plot EMI</td>
             <td data-label="Budget">1,083.00</td>
-            <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="1083.00" /></td>
+            <td data-label="Spent"><input class="spend-input invest-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="1083.00" /></td>
             <td data-label="Remaining" class="remaining ok">1,083.00</td>
             <td data-label="% Salary">29.9%</td>
           </tr>
           <tr>
             <td>S&amp;P 500 (Scalable Capital)</td>
             <td data-label="Budget">100.00</td>
-            <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
+            <td data-label="Spent"><input class="spend-input invest-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="100.00" /></td>
             <td data-label="Remaining" class="remaining ok">100.00</td>
             <td data-label="% Salary">2.8%</td>
           </tr>
           <tr>
             <td>Gold</td>
             <td data-label="Budget">100.00</td>
-            <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
+            <td data-label="Spent"><input class="spend-input invest-input" type="text" inputmode="decimal" placeholder="0.00" data-budget="100.00" /></td>
             <td data-label="Remaining" class="remaining ok">100.00</td>
             <td data-label="% Salary">2.8%</td>
           </tr>
@@ -515,24 +533,6 @@
     </div>
   </div>
 
-  <!-- Unplanned -->
-  <div class="section">
-    <div class="section-header open" onclick="toggleSection(this)">
-      <span class="section-title orange">Unplanned</span>
-      <svg class="section-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-    </div>
-    <div class="section-body open">
-      <div class="unplanned-list" id="unplanned-list"></div>
-      <button class="add-row-btn" onclick="addUnplannedRow()">
-        + Add expense
-      </button>
-      <div class="unplanned-total-row">
-        <span class="unplanned-total-label">Total Unplanned</span>
-        <span class="unplanned-total-amt" id="unplanned-total">€ 0.00</span>
-      </div>
-    </div>
-  </div>
-
 </div><!-- /.page -->
 
 <script>
@@ -540,6 +540,46 @@
   const EXPENSE_BUDGET = 1885.73;
   const INVEST_BUDGET  = 1283.00;
   const BASE_SURPLUS   = 450.27;
+
+  /* ── Math expression evaluator (safe: only digits and operators) ── */
+  function evalExpr(raw) {
+    const str = raw.trim();
+    if (!str) return 0;
+    // Only allow digits, decimals, spaces, and + - * /
+    if (!/^[\d\s\.\+\-\*\/\(\)]+$/.test(str)) return NaN;
+    try {
+      const result = Function('"use strict"; return (' + str + ')')();
+      return typeof result === 'number' && isFinite(result) ? Math.round(result * 100) / 100 : NaN;
+    } catch { return NaN; }
+  }
+
+  function getInputValue(input) {
+    return evalExpr(input.value);
+  }
+
+  /* Called on blur: resolve expression → plain number in the field */
+  function resolveInput(input) {
+    const val = evalExpr(input.value);
+    if (!isNaN(val) && input.value.trim() !== '') {
+      input.value = val;
+    }
+    input.classList.remove('expr', 'error');
+  }
+
+  /* Called on each keystroke: style the field based on content */
+  function styleInput(input) {
+    const raw = input.value.trim();
+    if (!raw) { input.classList.remove('expr', 'error'); return; }
+    const hasOp = /[\+\-\*\/]/.test(raw);
+    const val   = evalExpr(raw);
+    if (isNaN(val)) {
+      input.classList.add('error'); input.classList.remove('expr');
+    } else if (hasOp) {
+      input.classList.add('expr'); input.classList.remove('error');
+    } else {
+      input.classList.remove('expr', 'error');
+    }
+  }
 
   /* ── Formatting ── */
   function fmt(n) {
@@ -572,10 +612,10 @@
     let totalSpent = 0;
     document.querySelectorAll('.' + inputClass).forEach(input => {
       const budget = parseFloat(input.dataset.budget);
-      const spent  = parseFloat(input.value) || 0;
+      const spent  = getInputValue(input) || 0;
       totalSpent  += spent;
       setRemaining(input.closest('tr').querySelector('.remaining'), budget - spent);
-      input.classList.toggle('over', spent > budget);
+      input.classList.toggle('over', spent > budget && !input.classList.contains('expr') && !input.classList.contains('error'));
     });
     const totalRem = budgetTotal - totalSpent;
     document.getElementById(ids.spentTotal).textContent = fmt(totalSpent);
@@ -590,11 +630,9 @@
   function recalcUnplanned() {
     let total = 0;
     document.querySelectorAll('.unplanned-amt').forEach(input => {
-      total += parseFloat(input.value) || 0;
+      total += getInputValue(input) || 0;
     });
     document.getElementById('unplanned-total').textContent = '€ ' + fmt(total);
-    document.getElementById('sum-unplanned-spent').textContent = fmt(total);
-    document.getElementById('sum-unplanned-pct').textContent = ((total / SALARY) * 100).toFixed(1) + '%';
     return total;
   }
 
@@ -624,20 +662,31 @@
     recalcSurplus(expSpent, invSpent, unplannedSpent);
   }
 
-  document.querySelectorAll('.spend-input').forEach(el => el.addEventListener('input', () => { recalc(); saveData(); }));
+  /* Attach math events to a spend-input */
+  function attachSpendEvents(input) {
+    input.addEventListener('input',  () => { styleInput(input); recalc(); saveData(); });
+    input.addEventListener('blur',   () => { resolveInput(input); recalc(); saveData(); });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); });
+  }
+
+  document.querySelectorAll('.spend-input').forEach(attachSpendEvents);
 
   /* ── Unplanned rows ── */
   function addUnplannedRow(desc = '', amt = '') {
     const list = document.getElementById('unplanned-list');
     const row  = document.createElement('div');
     row.className = 'unplanned-row';
+    const safeDesc = desc.replace(/"/g, '&quot;');
     row.innerHTML = `
-      <input class="unplanned-desc" type="text" placeholder="What was it for?" value="${desc}" />
-      <input class="unplanned-amt"  type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${amt}" />
+      <input class="unplanned-desc" type="text" placeholder="What was it for?" value="${safeDesc}" />
+      <input class="unplanned-amt math-input" type="text" inputmode="decimal" placeholder="0.00" value="${amt}" />
       <button class="del-btn" onclick="removeUnplannedRow(this)" title="Remove">×</button>
     `;
+    const amtInput = row.querySelector('.unplanned-amt');
     row.querySelector('.unplanned-desc').addEventListener('input', saveData);
-    row.querySelector('.unplanned-amt').addEventListener('input', () => { recalc(); saveData(); });
+    amtInput.addEventListener('input',   () => { styleInput(amtInput); recalc(); saveData(); });
+    amtInput.addEventListener('blur',    () => { resolveInput(amtInput); recalc(); saveData(); });
+    amtInput.addEventListener('keydown', e => { if (e.key === 'Enter') amtInput.blur(); });
     list.appendChild(row);
     recalc();
   }
@@ -678,44 +727,35 @@
   }
 
   function loadData(month) {
-    // Clear unplanned rows
     document.getElementById('unplanned-list').innerHTML = '';
-
     const raw = localStorage.getItem(storageKey(month));
     if (!raw) {
       document.querySelectorAll('.spend-input').forEach(i => { i.value = ''; });
       recalc();
       return;
     }
-
     const data = JSON.parse(raw);
-
     if (data.spendValues) {
       document.querySelectorAll('.spend-input').forEach((input, i) => {
         input.value = data.spendValues[i] || '';
       });
     }
-
     if (data.unplanned) {
       data.unplanned.forEach(({ desc, amt }) => addUnplannedRow(desc, amt));
     }
-
     recalc();
   }
 
   /* ── JSON Export ── */
   function exportJSON() {
-    const month = document.getElementById('month-picker').value;
     const allData = {};
-    const months = [...document.querySelectorAll('#month-picker option')].map(o => o.value);
-    months.forEach(m => {
-      const raw = localStorage.getItem(storageKey(m));
-      if (raw) allData[m] = JSON.parse(raw);
+    [...document.querySelectorAll('#month-picker option')].forEach(o => {
+      const raw = localStorage.getItem(storageKey(o.value));
+      if (raw) allData[o.value] = JSON.parse(raw);
     });
-
     const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
-    const a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
     a.download = 'budget_data.json';
     a.click();
     URL.revokeObjectURL(a.href);
