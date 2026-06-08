@@ -25,12 +25,11 @@
       flex-wrap: wrap;
     }
     .toolbar-left  { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-    .toolbar-right { display: flex; align-items: center; gap: 8px; }
+    .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     .month-select {
-      flex: 1;
-      min-width: 0;
-      padding: 10px 12px;
+      flex: 1; min-width: 0;
+      padding: 10px 32px 10px 12px;
       border: 1.5px solid #c8d8ea;
       border-radius: 8px;
       font-size: 1rem;
@@ -43,86 +42,90 @@
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232d4a6b' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
       background-position: right 12px center;
-      padding-right: 32px;
     }
 
     .save-indicator {
-      font-size: 0.8rem;
-      color: #27ae60;
-      font-weight: 600;
-      opacity: 0;
-      transition: opacity 0.4s;
-      white-space: nowrap;
+      font-size: 0.8rem; color: #27ae60; font-weight: 600;
+      opacity: 0; transition: opacity 0.4s; white-space: nowrap;
     }
     .save-indicator.show { opacity: 1; }
 
-    .save-btn {
-      padding: 10px 18px;
-      background: #27ae60;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
+    .btn {
+      padding: 10px 16px;
+      border: none; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 600;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: flex; align-items: center; gap: 6px;
       white-space: nowrap;
       -webkit-tap-highlight-color: transparent;
+      transition: filter 0.15s;
     }
-    .save-btn:active { background: #219a52; }
-    .save-btn svg { width: 16px; height: 16px; fill: #fff; flex-shrink: 0; }
+    .btn:active { filter: brightness(0.88); }
+    .btn svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+    .btn-save   { background: #27ae60; color: #fff; }
+    .btn-export { background: #2d4a6b; color: #fff; }
+    .btn-import { background: #fff; color: #2d4a6b; border: 1.5px solid #c8d8ea; }
 
     /* ── Page card ── */
     .page {
-      max-width: 980px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+      max-width: 980px; margin: 0 auto;
+      background: #fff; border-radius: 12px;
+      overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,0.1);
     }
 
     /* ── Header ── */
     .header {
-      background: #2d4a6b;
-      color: #fff;
-      text-align: center;
-      padding: 24px 16px 20px;
+      background: #2d4a6b; color: #fff;
+      text-align: center; padding: 24px 16px 20px;
     }
-    .header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: 0.3px; }
+    .header h1 { font-size: 1.6rem; font-weight: 700; }
     .header p  { font-size: 0.85rem; color: #c8d8ea; margin-top: 5px; }
 
-    /* ── Sections ── */
-    .section { padding: 20px 16px; }
-    .section + .section { border-top: 1px solid #eee; }
+    /* ── Collapsible sections ── */
+    .section { border-top: 1px solid #eee; }
+
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .section-header:hover { background: #fafafa; }
 
     .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid currentColor;
+      font-size: 1.1rem; font-weight: 700;
     }
     .section-title.blue  { color: #4a90c4; }
     .section-title.red   { color: #c0392b; }
     .section-title.green { color: #27ae60; }
+    .section-title.orange { color: #e67e22; }
+
+    .section-chevron {
+      width: 20px; height: 20px;
+      fill: #999;
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .section-header.open .section-chevron { transform: rotate(180deg); }
+
+    .section-body {
+      padding: 0 20px 20px;
+      display: none;
+    }
+    .section-body.open { display: block; }
 
     /* ── Pill badges ── */
     .pill {
-      display: inline-block;
-      padding: 2px 9px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #fff;
+      display: inline-block; padding: 2px 9px;
+      border-radius: 20px; font-size: 0.78rem; font-weight: 700; color: #fff;
     }
     .pill-blue  { background: #4a90c4; }
     .pill-red   { background: #c0392b; }
     .pill-green { background: #27ae60; }
+    .pill-orange { background: #e67e22; }
 
-    /* ── DESKTOP table layout ── */
+    /* ── Desktop table ── */
     table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     thead tr { color: #fff; }
     thead th { padding: 11px 14px; text-align: left; font-weight: 600; }
@@ -132,21 +135,18 @@
     tbody td { padding: 10px 14px; }
     tbody td:not(:first-child) { text-align: right; }
     tr.bold-row td { font-weight: 700; }
+    tr.surplus-row td { background: #f0f7ff; }
     .table-blue  thead { background: #4a90c4; }
     .table-red   thead { background: #c0392b; }
     .table-green thead { background: #27ae60; }
+    .table-orange thead { background: #e67e22; }
 
-    /* ── Spend input (desktop) ── */
+    /* ── Spend input ── */
     .spend-input {
-      width: 100px;
-      padding: 5px 8px;
-      border: 1.5px solid #ddd;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      text-align: right;
-      color: #333;
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100px; padding: 5px 8px;
+      border: 1.5px solid #ddd; border-radius: 6px;
+      font-size: 0.9rem; text-align: right; color: #333;
+      outline: none; transition: border-color 0.2s;
     }
     .spend-input:focus { border-color: #4a90c4; }
     .spend-input.over  { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
@@ -156,93 +156,111 @@
     td.remaining.over { color: #c0392b; }
     td.remaining.zero { color: #888; }
 
-    tr.surplus-row td { background: #f0f7ff; }
-
     .warn-badge {
-      display: none;
-      font-size: 0.72rem;
-      color: #c0392b;
-      font-weight: 600;
-      margin-left: 5px;
+      display: none; font-size: 0.72rem;
+      color: #c0392b; font-weight: 600; margin-left: 5px;
     }
     .warn-badge.visible { display: inline; }
 
-    /* ── MOBILE card layout ── */
+    /* ── Unplanned section ── */
+    .unplanned-list { margin-bottom: 12px; }
+
+    .unplanned-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 0; border-bottom: 1px solid #f0f0f0;
+    }
+    .unplanned-row:last-child { border-bottom: none; }
+
+    .unplanned-desc {
+      flex: 1; min-width: 0;
+      padding: 7px 10px;
+      border: 1.5px solid #ddd; border-radius: 6px;
+      font-size: 0.9rem; color: #333; outline: none;
+    }
+    .unplanned-desc:focus { border-color: #e67e22; }
+
+    .unplanned-amt {
+      width: 110px;
+      padding: 7px 10px;
+      border: 1.5px solid #ddd; border-radius: 6px;
+      font-size: 0.9rem; text-align: right; color: #333; outline: none;
+    }
+    .unplanned-amt:focus { border-color: #e67e22; }
+
+    .del-btn {
+      background: none; border: none; cursor: pointer;
+      color: #c0392b; font-size: 1.2rem; line-height: 1;
+      padding: 4px 6px; border-radius: 4px;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+    .del-btn:hover { background: #fff0f0; }
+
+    .add-row-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: none; border: 1.5px dashed #e67e22;
+      color: #e67e22; border-radius: 8px;
+      padding: 8px 14px; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; width: 100%; justify-content: center;
+      margin-top: 10px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .add-row-btn:hover { background: #fff8f0; }
+
+    .unplanned-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0 0; margin-top: 8px;
+      border-top: 2px solid #e67e22;
+      font-weight: 700; font-size: 0.95rem;
+    }
+    .unplanned-total-label { color: #e67e22; }
+    .unplanned-total-amt   { color: #c0392b; }
+
+    /* ── MOBILE ── */
     @media (max-width: 600px) {
       body { padding: 10px; }
-
       .header h1 { font-size: 1.3rem; }
+      .section-header { padding: 14px 14px; }
+      .section-body { padding: 0 12px 16px; }
 
-      /* Hide desktop tables, show cards */
       table, thead, tbody, tr, th, td { display: block; width: 100%; }
       thead { display: none; }
 
       tbody tr {
-        border: 1px solid #e8e8e8;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        padding: 12px 14px;
-        background: #fff;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        border: 1px solid #e8e8e8; border-radius: 10px;
+        margin-bottom: 10px; padding: 12px 14px;
+        background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
       }
       tbody tr:last-child { border: 1px solid #e8e8e8; margin-bottom: 0; }
 
-      /* Each cell becomes a label: value row */
       tbody td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px 0;
-        text-align: left;
-        border: none;
-        font-size: 0.88rem;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 5px 0; text-align: left; border: none; font-size: 0.88rem;
       }
       tbody td:not(:first-child) { text-align: left; }
 
-      /* Label from data-label attribute */
       tbody td::before {
         content: attr(data-label);
-        font-size: 0.72rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        color: #999;
-        flex-shrink: 0;
-        margin-right: 8px;
+        font-size: 0.72rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.4px;
+        color: #999; flex-shrink: 0; margin-right: 8px;
       }
-
-      /* Item name cell — no label, bigger text */
       tbody td:first-child {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: #2d4a6b;
-        padding-bottom: 8px;
-        margin-bottom: 4px;
+        font-weight: 700; font-size: 0.95rem; color: #2d4a6b;
+        padding-bottom: 8px; margin-bottom: 4px;
         border-bottom: 1px solid #f0f0f0;
       }
       tbody td:first-child::before { display: none; }
 
-      /* Bold total rows */
       tr.bold-row { background: #f8f9fa; }
       tr.bold-row td:first-child { color: #333; }
-
-      /* Surplus row */
       tr.surplus-row { background: #f0f7ff; }
 
-      /* Input on mobile — full width, bigger touch target */
-      .spend-input {
-        width: 120px;
-        padding: 8px 10px;
-        font-size: 1rem;
-        border-radius: 8px;
-      }
+      .spend-input { width: 120px; padding: 8px 10px; font-size: 1rem; border-radius: 8px; }
 
-      /* Remaining cell color */
-      td.remaining { justify-content: space-between; }
-
-      /* Wrap section in a subtle container */
-      .section { padding: 16px 12px; }
-      .section-title { font-size: 1rem; margin-bottom: 12px; }
+      .unplanned-row { flex-wrap: wrap; }
+      .unplanned-desc { min-width: 100%; }
+      .unplanned-amt  { flex: 1; }
     }
   </style>
 </head>
@@ -268,17 +286,24 @@
     <span class="save-indicator" id="save-indicator">✓ Saved</span>
   </div>
   <div class="toolbar-right">
-    <button class="save-btn" onclick="saveData()">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm3-10H5V5h10v4z"/>
-      </svg>
+    <button class="btn btn-save" onclick="saveData()">
+      <svg viewBox="0 0 24 24"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm3-10H5V5h10v4z"/></svg>
       Save
     </button>
+    <button class="btn btn-export" onclick="exportJSON()">
+      <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+      Export
+    </button>
+    <button class="btn btn-import" onclick="document.getElementById('import-file').click()">
+      <svg viewBox="0 0 24 24"><path d="M5 15h4v6h6v-6h4l-7-7-7 7zM5 4v2h14V4H5z"/></svg>
+      Import
+    </button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)" />
   </div>
 </div>
 
 <!-- Page -->
-<div class="page" id="report-page">
+<div class="page">
 
   <div class="header">
     <h1>Financial Overview</h1>
@@ -287,206 +312,228 @@
 
   <!-- Summary -->
   <div class="section">
-    <div class="section-title blue">Summary</div>
-    <table class="table-blue">
-      <thead>
-        <tr>
-          <th>Category</th>
-          <th>Budget (€)</th>
-          <th>Spent (€)</th>
-          <th>Remaining (€)</th>
-          <th>% of Salary</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="bold-row">
-          <td>Total Gross Salary</td>
-          <td data-label="Budget">3,619.00</td>
-          <td data-label="Spent">—</td>
-          <td data-label="Remaining">—</td>
-          <td data-label="% Salary">100.0%</td>
-        </tr>
-        <tr>
-          <td>Total Expenses</td>
-          <td data-label="Budget">1,885.73</td>
-          <td data-label="Spent" id="sum-expenses-spent">0.00</td>
-          <td data-label="Remaining" id="sum-expenses-rem" class="remaining ok">1,885.73</td>
-          <td data-label="% Salary">51.9%</td>
-        </tr>
-        <tr>
-          <td>Total Investments</td>
-          <td data-label="Budget">1,283.00</td>
-          <td data-label="Spent" id="sum-investments-spent">0.00</td>
-          <td data-label="Remaining" id="sum-investments-rem" class="remaining ok">1,283.00</td>
-          <td data-label="% Salary">35.5%</td>
-        </tr>
-        <tr class="bold-row surplus-row">
-          <td>Remaining Surplus</td>
-          <td data-label="Budget">450.27</td>
-          <td data-label="Spent">—</td>
-          <td data-label="Remaining" id="sum-surplus" style="color:#27ae60;font-weight:700;">450.27</td>
-          <td data-label="% Salary"><span class="pill pill-blue" id="sum-surplus-pct">12.6%</span></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="section-header open" onclick="toggleSection(this)">
+      <span class="section-title blue">Summary</span>
+      <svg class="section-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+    <div class="section-body open">
+      <table class="table-blue">
+        <thead>
+          <tr><th>Category</th><th>Budget (€)</th><th>Spent (€)</th><th>Remaining (€)</th><th>% of Salary</th></tr>
+        </thead>
+        <tbody>
+          <tr class="bold-row">
+            <td>Total Gross Salary</td>
+            <td data-label="Budget">3,619.00</td>
+            <td data-label="Spent">—</td>
+            <td data-label="Remaining">—</td>
+            <td data-label="% Salary">100.0%</td>
+          </tr>
+          <tr>
+            <td>Total Expenses</td>
+            <td data-label="Budget">1,885.73</td>
+            <td data-label="Spent" id="sum-expenses-spent">0.00</td>
+            <td data-label="Remaining" id="sum-expenses-rem" class="remaining ok">1,885.73</td>
+            <td data-label="% Salary">51.9%</td>
+          </tr>
+          <tr>
+            <td>Total Investments</td>
+            <td data-label="Budget">1,283.00</td>
+            <td data-label="Spent" id="sum-investments-spent">0.00</td>
+            <td data-label="Remaining" id="sum-investments-rem" class="remaining ok">1,283.00</td>
+            <td data-label="% Salary">35.5%</td>
+          </tr>
+          <tr>
+            <td>Unplanned Expenses</td>
+            <td data-label="Budget">—</td>
+            <td data-label="Spent" id="sum-unplanned-spent">0.00</td>
+            <td data-label="Remaining">—</td>
+            <td data-label="% Salary" id="sum-unplanned-pct">0.0%</td>
+          </tr>
+          <tr class="bold-row surplus-row">
+            <td>Remaining Surplus</td>
+            <td data-label="Budget">450.27</td>
+            <td data-label="Spent">—</td>
+            <td data-label="Remaining" id="sum-surplus" style="color:#27ae60;font-weight:700;">450.27</td>
+            <td data-label="% Salary"><span class="pill pill-blue" id="sum-surplus-pct">12.4%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Expenses -->
   <div class="section">
-    <div class="section-title red">Expenses</div>
-    <table class="table-red">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Budget (€)</th>
-          <th>Spent (€)</th>
-          <th>Remaining (€)</th>
-          <th>% of Salary</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Rent (incl. Utilities &amp; Internet)</td>
-          <td data-label="Budget">692.73</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="692.73" /></td>
-          <td data-label="Remaining" class="remaining ok">692.73</td>
-          <td data-label="% Salary">19.0%</td>
-        </tr>
-        <tr>
-          <td>Trip Account</td>
-          <td data-label="Budget">350.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="350.00" /></td>
-          <td data-label="Remaining" class="remaining ok">350.00</td>
-          <td data-label="% Salary">9.7%</td>
-        </tr>
-        <tr>
-          <td>Groceries</td>
-          <td data-label="Budget">250.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="250.00" /></td>
-          <td data-label="Remaining" class="remaining ok">250.00</td>
-          <td data-label="% Salary">6.9%</td>
-        </tr>
-        <tr>
-          <td>Car EMI</td>
-          <td data-label="Budget">150.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="150.00" /></td>
-          <td data-label="Remaining" class="remaining ok">150.00</td>
-          <td data-label="% Salary">4.1%</td>
-        </tr>
-        <tr>
-          <td>Joint Account</td>
-          <td data-label="Budget">120.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="120.00" /></td>
-          <td data-label="Remaining" class="remaining ok">120.00</td>
-          <td data-label="% Salary">3.3%</td>
-        </tr>
-        <tr>
-          <td>Gym Fee</td>
-          <td data-label="Budget">113.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="113.00" /></td>
-          <td data-label="Remaining" class="remaining ok">113.00</td>
-          <td data-label="% Salary">3.1%</td>
-        </tr>
-        <tr>
-          <td>Credit Card (Unplanned)</td>
-          <td data-label="Budget">80.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="80.00" /></td>
-          <td data-label="Remaining" class="remaining ok">80.00</td>
-          <td data-label="% Salary">2.2%</td>
-        </tr>
-        <tr>
-          <td>Petrol</td>
-          <td data-label="Budget">50.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="50.00" /></td>
-          <td data-label="Remaining" class="remaining ok">50.00</td>
-          <td data-label="% Salary">1.4%</td>
-        </tr>
-        <tr>
-          <td>Bus Pass</td>
-          <td data-label="Budget">47.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="47.00" /></td>
-          <td data-label="Remaining" class="remaining ok">47.00</td>
-          <td data-label="% Salary">1.3%</td>
-        </tr>
-        <tr>
-          <td>Claude Subscription</td>
-          <td data-label="Budget">20.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="20.00" /></td>
-          <td data-label="Remaining" class="remaining ok">20.00</td>
-          <td data-label="% Salary">0.6%</td>
-        </tr>
-        <tr>
-          <td>SIM Card</td>
-          <td data-label="Budget">10.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="10.00" /></td>
-          <td data-label="Remaining" class="remaining ok">10.00</td>
-          <td data-label="% Salary">0.3%</td>
-        </tr>
-        <tr>
-          <td>Spotify</td>
-          <td data-label="Budget">3.00</td>
-          <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="3.00" /></td>
-          <td data-label="Remaining" class="remaining ok">3.00</td>
-          <td data-label="% Salary">0.1%</td>
-        </tr>
-        <tr class="bold-row">
-          <td>Total Expenses <span class="warn-badge" id="exp-warn">⚠ Over!</span></td>
-          <td data-label="Budget">1,885.73</td>
-          <td data-label="Spent" id="exp-spent-total">0.00</td>
-          <td data-label="Remaining" id="exp-remaining-total" class="remaining ok">1,885.73</td>
-          <td data-label="% Salary"><span class="pill pill-red">51.9%</span></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="section-header open" onclick="toggleSection(this)">
+      <span class="section-title red">Expenses</span>
+      <svg class="section-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+    <div class="section-body open">
+      <table class="table-red">
+        <thead>
+          <tr><th>Item</th><th>Budget (€)</th><th>Spent (€)</th><th>Remaining (€)</th><th>% of Salary</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Rent (incl. Utilities &amp; Internet)</td>
+            <td data-label="Budget">692.73</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="692.73" /></td>
+            <td data-label="Remaining" class="remaining ok">692.73</td>
+            <td data-label="% Salary">19.1%</td>
+          </tr>
+          <tr>
+            <td>Trip Account</td>
+            <td data-label="Budget">350.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="350.00" /></td>
+            <td data-label="Remaining" class="remaining ok">350.00</td>
+            <td data-label="% Salary">9.7%</td>
+          </tr>
+          <tr>
+            <td>Groceries</td>
+            <td data-label="Budget">250.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="250.00" /></td>
+            <td data-label="Remaining" class="remaining ok">250.00</td>
+            <td data-label="% Salary">6.9%</td>
+          </tr>
+          <tr>
+            <td>Car EMI</td>
+            <td data-label="Budget">150.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="150.00" /></td>
+            <td data-label="Remaining" class="remaining ok">150.00</td>
+            <td data-label="% Salary">4.1%</td>
+          </tr>
+          <tr>
+            <td>Joint Account</td>
+            <td data-label="Budget">120.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="120.00" /></td>
+            <td data-label="Remaining" class="remaining ok">120.00</td>
+            <td data-label="% Salary">3.3%</td>
+          </tr>
+          <tr>
+            <td>Gym Fee</td>
+            <td data-label="Budget">113.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="113.00" /></td>
+            <td data-label="Remaining" class="remaining ok">113.00</td>
+            <td data-label="% Salary">3.1%</td>
+          </tr>
+          <tr>
+            <td>Credit Card (Unplanned)</td>
+            <td data-label="Budget">80.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="80.00" /></td>
+            <td data-label="Remaining" class="remaining ok">80.00</td>
+            <td data-label="% Salary">2.2%</td>
+          </tr>
+          <tr>
+            <td>Petrol</td>
+            <td data-label="Budget">50.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="50.00" /></td>
+            <td data-label="Remaining" class="remaining ok">50.00</td>
+            <td data-label="% Salary">1.4%</td>
+          </tr>
+          <tr>
+            <td>Bus Pass</td>
+            <td data-label="Budget">47.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="47.00" /></td>
+            <td data-label="Remaining" class="remaining ok">47.00</td>
+            <td data-label="% Salary">1.3%</td>
+          </tr>
+          <tr>
+            <td>Claude Subscription</td>
+            <td data-label="Budget">20.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="20.00" /></td>
+            <td data-label="Remaining" class="remaining ok">20.00</td>
+            <td data-label="% Salary">0.6%</td>
+          </tr>
+          <tr>
+            <td>SIM Card</td>
+            <td data-label="Budget">10.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="10.00" /></td>
+            <td data-label="Remaining" class="remaining ok">10.00</td>
+            <td data-label="% Salary">0.3%</td>
+          </tr>
+          <tr>
+            <td>Spotify</td>
+            <td data-label="Budget">3.00</td>
+            <td data-label="Spent"><input class="spend-input expense-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="3.00" /></td>
+            <td data-label="Remaining" class="remaining ok">3.00</td>
+            <td data-label="% Salary">0.1%</td>
+          </tr>
+          <tr class="bold-row">
+            <td>Total Expenses <span class="warn-badge" id="exp-warn">⚠ Over!</span></td>
+            <td data-label="Budget">1,885.73</td>
+            <td data-label="Spent" id="exp-spent-total">0.00</td>
+            <td data-label="Remaining" id="exp-remaining-total" class="remaining ok">1,885.73</td>
+            <td data-label="% Salary"><span class="pill pill-red">51.9%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Investments -->
   <div class="section">
-    <div class="section-title green">Investments</div>
-    <table class="table-green">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Budget (€)</th>
-          <th>Spent (€)</th>
-          <th>Remaining (€)</th>
-          <th>% of Salary</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Plot EMI</td>
-          <td data-label="Budget">1,083.00</td>
-          <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="1083.00" /></td>
-          <td data-label="Remaining" class="remaining ok">1,083.00</td>
-          <td data-label="% Salary">29.9%</td>
-        </tr>
-        <tr>
-          <td>S&amp;P 500 (Scalable Capital)</td>
-          <td data-label="Budget">100.00</td>
-          <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
-          <td data-label="Remaining" class="remaining ok">100.00</td>
-          <td data-label="% Salary">2.8%</td>
-        </tr>
-        <tr>
-          <td>Gold</td>
-          <td data-label="Budget">100.00</td>
-          <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
-          <td data-label="Remaining" class="remaining ok">100.00</td>
-          <td data-label="% Salary">2.8%</td>
-        </tr>
-        <tr class="bold-row">
-          <td>Total Investments <span class="warn-badge" id="inv-warn">⚠ Over!</span></td>
-          <td data-label="Budget">1,283.00</td>
-          <td data-label="Spent" id="inv-spent-total">0.00</td>
-          <td data-label="Remaining" id="inv-remaining-total" class="remaining ok">1,283.00</td>
-          <td data-label="% Salary"><span class="pill pill-green">35.5%</span></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="section-header open" onclick="toggleSection(this)">
+      <span class="section-title green">Investments</span>
+      <svg class="section-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+    <div class="section-body open">
+      <table class="table-green">
+        <thead>
+          <tr><th>Item</th><th>Budget (€)</th><th>Spent (€)</th><th>Remaining (€)</th><th>% of Salary</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Plot EMI</td>
+            <td data-label="Budget">1,083.00</td>
+            <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="1083.00" /></td>
+            <td data-label="Remaining" class="remaining ok">1,083.00</td>
+            <td data-label="% Salary">29.9%</td>
+          </tr>
+          <tr>
+            <td>S&amp;P 500 (Scalable Capital)</td>
+            <td data-label="Budget">100.00</td>
+            <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
+            <td data-label="Remaining" class="remaining ok">100.00</td>
+            <td data-label="% Salary">2.8%</td>
+          </tr>
+          <tr>
+            <td>Gold</td>
+            <td data-label="Budget">100.00</td>
+            <td data-label="Spent"><input class="spend-input invest-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" data-budget="100.00" /></td>
+            <td data-label="Remaining" class="remaining ok">100.00</td>
+            <td data-label="% Salary">2.8%</td>
+          </tr>
+          <tr class="bold-row">
+            <td>Total Investments <span class="warn-badge" id="inv-warn">⚠ Over!</span></td>
+            <td data-label="Budget">1,283.00</td>
+            <td data-label="Spent" id="inv-spent-total">0.00</td>
+            <td data-label="Remaining" id="inv-remaining-total" class="remaining ok">1,283.00</td>
+            <td data-label="% Salary"><span class="pill pill-green">35.5%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-</div>
+  <!-- Unplanned -->
+  <div class="section">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <span class="section-title orange">Unplanned</span>
+      <svg class="section-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+    <div class="section-body open">
+      <div class="unplanned-list" id="unplanned-list"></div>
+      <button class="add-row-btn" onclick="addUnplannedRow()">
+        + Add expense
+      </button>
+      <div class="unplanned-total-row">
+        <span class="unplanned-total-label">Total Unplanned</span>
+        <span class="unplanned-total-amt" id="unplanned-total">€ 0.00</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /.page -->
 
 <script>
   const SALARY         = 3619.00;
@@ -494,12 +541,13 @@
   const INVEST_BUDGET  = 1283.00;
   const BASE_SURPLUS   = 450.27;
 
+  /* ── Formatting ── */
   function fmt(n) {
     return n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function setRemaining(cell, rem) {
-    cell.className = cell.className.replace(/\b(ok|over|zero)\b/g, '').trim();
+    cell.classList.remove('ok', 'over', 'zero');
     if (!cell.classList.contains('remaining')) cell.classList.add('remaining');
     if (rem < 0) {
       cell.classList.add('over');
@@ -513,19 +561,22 @@
     }
   }
 
-  function recalcGroup(inputClass, ids, budgetTotal) {
-    const inputs = document.querySelectorAll('.' + inputClass);
-    let totalSpent = 0;
+  /* ── Toggle collapsible ── */
+  function toggleSection(header) {
+    header.classList.toggle('open');
+    header.nextElementSibling.classList.toggle('open');
+  }
 
-    inputs.forEach(input => {
+  /* ── Recalc budget group ── */
+  function recalcGroup(inputClass, ids, budgetTotal) {
+    let totalSpent = 0;
+    document.querySelectorAll('.' + inputClass).forEach(input => {
       const budget = parseFloat(input.dataset.budget);
       const spent  = parseFloat(input.value) || 0;
       totalSpent  += spent;
-      const remCell = input.closest('tr').querySelector('.remaining');
-      setRemaining(remCell, budget - spent);
+      setRemaining(input.closest('tr').querySelector('.remaining'), budget - spent);
       input.classList.toggle('over', spent > budget);
     });
-
     const totalRem = budgetTotal - totalSpent;
     document.getElementById(ids.spentTotal).textContent = fmt(totalSpent);
     setRemaining(document.getElementById(ids.remTotal), totalRem);
@@ -535,8 +586,21 @@
     return totalSpent;
   }
 
-  function recalcSurplus(expSpent, invSpent) {
-    const surplus = SALARY - expSpent - invSpent;
+  /* ── Recalc unplanned ── */
+  function recalcUnplanned() {
+    let total = 0;
+    document.querySelectorAll('.unplanned-amt').forEach(input => {
+      total += parseFloat(input.value) || 0;
+    });
+    document.getElementById('unplanned-total').textContent = '€ ' + fmt(total);
+    document.getElementById('sum-unplanned-spent').textContent = fmt(total);
+    document.getElementById('sum-unplanned-pct').textContent = ((total / SALARY) * 100).toFixed(1) + '%';
+    return total;
+  }
+
+  /* ── Recalc surplus ── */
+  function recalcSurplus(expSpent, invSpent, unplannedSpent) {
+    const surplus = SALARY - expSpent - invSpent - unplannedSpent;
     const pct     = ((surplus / SALARY) * 100).toFixed(1) + '%';
     const cell    = document.getElementById('sum-surplus');
     cell.textContent = fmt(surplus);
@@ -544,27 +608,45 @@
     document.getElementById('sum-surplus-pct').textContent = pct;
   }
 
+  /* ── Full recalc ── */
   function recalc() {
     const expSpent = recalcGroup('expense-input', {
-      spentTotal:  'exp-spent-total',
-      remTotal:    'exp-remaining-total',
-      warn:        'exp-warn',
-      summarySpent:'sum-expenses-spent',
-      summaryRem:  'sum-expenses-rem'
+      spentTotal: 'exp-spent-total', remTotal: 'exp-remaining-total',
+      warn: 'exp-warn', summarySpent: 'sum-expenses-spent', summaryRem: 'sum-expenses-rem'
     }, EXPENSE_BUDGET);
 
     const invSpent = recalcGroup('invest-input', {
-      spentTotal:  'inv-spent-total',
-      remTotal:    'inv-remaining-total',
-      warn:        'inv-warn',
-      summarySpent:'sum-investments-spent',
-      summaryRem:  'sum-investments-rem'
+      spentTotal: 'inv-spent-total', remTotal: 'inv-remaining-total',
+      warn: 'inv-warn', summarySpent: 'sum-investments-spent', summaryRem: 'sum-investments-rem'
     }, INVEST_BUDGET);
 
-    recalcSurplus(expSpent, invSpent);
+    const unplannedSpent = recalcUnplanned();
+    recalcSurplus(expSpent, invSpent, unplannedSpent);
   }
 
-  document.querySelectorAll('.spend-input').forEach(el => el.addEventListener('input', recalc));
+  document.querySelectorAll('.spend-input').forEach(el => el.addEventListener('input', () => { recalc(); saveData(); }));
+
+  /* ── Unplanned rows ── */
+  function addUnplannedRow(desc = '', amt = '') {
+    const list = document.getElementById('unplanned-list');
+    const row  = document.createElement('div');
+    row.className = 'unplanned-row';
+    row.innerHTML = `
+      <input class="unplanned-desc" type="text" placeholder="What was it for?" value="${desc}" />
+      <input class="unplanned-amt"  type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${amt}" />
+      <button class="del-btn" onclick="removeUnplannedRow(this)" title="Remove">×</button>
+    `;
+    row.querySelector('.unplanned-desc').addEventListener('input', saveData);
+    row.querySelector('.unplanned-amt').addEventListener('input', () => { recalc(); saveData(); });
+    list.appendChild(row);
+    recalc();
+  }
+
+  function removeUnplannedRow(btn) {
+    btn.closest('.unplanned-row').remove();
+    recalc();
+    saveData();
+  }
 
   /* ── Month picker ── */
   document.getElementById('month-picker').addEventListener('change', function () {
@@ -572,35 +654,90 @@
     loadData(this.value);
   });
 
-  /* ── Save / Load ── */
+  /* ── localStorage save/load ── */
   function storageKey(month) { return 'budget_' + month.replace(' ', '_'); }
 
   function saveData() {
-    const month  = document.getElementById('month-picker').value;
-    const values = [];
-    document.querySelectorAll('.spend-input').forEach(input => values.push(input.value));
-    localStorage.setItem(storageKey(month), JSON.stringify(values));
+    const month = document.getElementById('month-picker').value;
+    const spendValues = [];
+    document.querySelectorAll('.spend-input').forEach(i => spendValues.push(i.value));
+
+    const unplanned = [];
+    document.querySelectorAll('.unplanned-row').forEach(row => {
+      unplanned.push({
+        desc: row.querySelector('.unplanned-desc').value,
+        amt:  row.querySelector('.unplanned-amt').value
+      });
+    });
+
+    localStorage.setItem(storageKey(month), JSON.stringify({ spendValues, unplanned }));
+
     const ind = document.getElementById('save-indicator');
     ind.classList.add('show');
     setTimeout(() => ind.classList.remove('show'), 2000);
   }
 
   function loadData(month) {
+    // Clear unplanned rows
+    document.getElementById('unplanned-list').innerHTML = '';
+
     const raw = localStorage.getItem(storageKey(month));
     if (!raw) {
-      document.querySelectorAll('.spend-input').forEach(input => { input.value = ''; });
+      document.querySelectorAll('.spend-input').forEach(i => { i.value = ''; });
       recalc();
       return;
     }
-    const values = JSON.parse(raw);
-    document.querySelectorAll('.spend-input').forEach((input, i) => {
-      input.value = values[i] || '';
-    });
+
+    const data = JSON.parse(raw);
+
+    if (data.spendValues) {
+      document.querySelectorAll('.spend-input').forEach((input, i) => {
+        input.value = data.spendValues[i] || '';
+      });
+    }
+
+    if (data.unplanned) {
+      data.unplanned.forEach(({ desc, amt }) => addUnplannedRow(desc, amt));
+    }
+
     recalc();
   }
 
-  document.querySelectorAll('.spend-input').forEach(el => el.addEventListener('input', saveData));
+  /* ── JSON Export ── */
+  function exportJSON() {
+    const month = document.getElementById('month-picker').value;
+    const allData = {};
+    const months = [...document.querySelectorAll('#month-picker option')].map(o => o.value);
+    months.forEach(m => {
+      const raw = localStorage.getItem(storageKey(m));
+      if (raw) allData[m] = JSON.parse(raw);
+    });
 
+    const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = 'budget_data.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  /* ── JSON Import ── */
+  function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const allData = JSON.parse(e.target.result);
+      Object.entries(allData).forEach(([month, data]) => {
+        localStorage.setItem(storageKey(month), JSON.stringify(data));
+      });
+      loadData(document.getElementById('month-picker').value);
+      event.target.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  /* ── Init ── */
   loadData(document.getElementById('month-picker').value);
 </script>
 </body>
