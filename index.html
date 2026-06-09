@@ -231,6 +231,46 @@
     .unplanned-total-label { color: #e67e22; }
     .unplanned-total-amt   { color: #c0392b; }
 
+    /* ── Forecasted Deductions section ── */
+    .section-title.purple { color: #7f5af0; }
+    .table-purple thead   { background: #7f5af0; }
+
+    .forecast-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 0; border-bottom: 1px solid #ede9fe;
+    }
+    .forecast-row:last-child { border-bottom: none; }
+
+    .forecast-label {
+      flex: 1; font-size: 0.9rem; color: #555;
+    }
+    .forecast-label.readonly { color: #888; font-style: italic; }
+
+    .forecast-amt-readonly {
+      width: 110px; padding: 6px 10px;
+      background: #f5f3ff; border: 1.5px solid #ddd6fe;
+      border-radius: 6px; font-size: 0.9rem;
+      text-align: right; color: #7f5af0; font-weight: 600;
+      pointer-events: none; user-select: none;
+    }
+
+    .forecast-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0 0; margin-top: 8px;
+      border-top: 2px solid #7f5af0;
+      font-weight: 700; font-size: 0.95rem;
+    }
+    .forecast-total-label { color: #7f5af0; }
+    .forecast-total-amt   { color: #7f5af0; }
+
+    .real-surplus-note {
+      margin-top: 10px; padding: 10px 14px;
+      background: #f5f3ff; border-radius: 8px;
+      border-left: 3px solid #7f5af0;
+      font-size: 0.88rem; color: #555;
+    }
+    .real-surplus-note strong { color: #7f5af0; font-size: 1rem; }
+
     /* ── MOBILE ── */
     @media (max-width: 600px) {
       body { padding: 10px; }
@@ -300,6 +340,9 @@
       .del-btn { font-size: 1.5rem; padding: 6px 10px; }
 
       .unplanned-list { margin-bottom: 10px; }
+
+      .forecast-amt-readonly { width: 100px; }
+      .forecast-row { flex-wrap: nowrap; }
     }
   </style>
 </head>
@@ -557,6 +600,43 @@
     </div>
   </div>
 
+  <!-- Forecasted Deductions -->
+  <div class="section">
+    <div class="section-header open" onclick="toggleSection(this)">
+      <span class="section-title purple">Forecasted Deductions</span>
+      <svg class="section-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+    </div>
+    <div class="section-body open">
+
+      <!-- Fixed read-only items -->
+      <div class="forecast-row">
+        <span class="forecast-label readonly">Utility (shared, pending deduction)</span>
+        <span class="forecast-amt-readonly">58.00</span>
+      </div>
+      <div class="forecast-row">
+        <span class="forecast-label readonly">Internet (shared, pending deduction)</span>
+        <span class="forecast-amt-readonly">25.00</span>
+      </div>
+      <div class="forecast-row">
+        <span class="forecast-label readonly">Lia Ins (shared, pending deduction)</span>
+        <span class="forecast-amt-readonly">6.00</span>
+      </div>
+
+      <!-- User-added forecasted items -->
+      <div class="unplanned-list" id="forecast-list"></div>
+      <button class="add-row-btn" style="border-color:#7f5af0;color:#7f5af0;" onclick="addForecastRow()">+ Add forecasted expense</button>
+
+      <div class="forecast-total-row">
+        <span class="forecast-total-label">Total Forecasted</span>
+        <span class="forecast-total-amt" id="forecast-total">€ 89.00</span>
+      </div>
+
+      <div class="real-surplus-note">
+        Real spendable surplus after deductions: <strong id="forecast-real-surplus">—</strong>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /.page -->
 
 <script>
@@ -660,12 +740,31 @@
     return total;
   }
 
+  const FIXED_FORECAST = 89; // Utility 58 + Internet 25 + Lia Ins 6 — always pending deduction
+
+  /* ── Recalc forecast deductions ── */
+  function recalcForecast(surplus) {
+    let extra = 0;
+    document.querySelectorAll('.forecast-amt-input').forEach(input => {
+      extra += getInputValue(input) || 0;
+    });
+    const total     = FIXED_FORECAST + extra;
+    const realSurplus = surplus - total;
+    document.getElementById('forecast-total').textContent = '€ ' + fmt(total);
+    const realEl = document.getElementById('forecast-real-surplus');
+    realEl.textContent = '€ ' + fmt(realSurplus);
+    realEl.style.color = realSurplus >= 0 ? '#27ae60' : '#c0392b';
+    return total;
+  }
+
   /* ── Recalc surplus ── */
   function recalcSurplus(expSpent, invSpent, unplannedSpent) {
     const surplus = SALARY - expSpent - invSpent - unplannedSpent;
     const pct     = ((surplus / SALARY) * 100).toFixed(1) + '%';
     const cell    = document.getElementById('sum-surplus');
-    cell.textContent = fmt(surplus);
+    const total   = recalcForecast(surplus);
+    const real    = surplus - total;
+    cell.innerHTML  = fmt(surplus) + ' <span style="color:#7f5af0;font-size:0.85em;font-weight:600;">(' + fmt(real) + ')</span>';
     cell.style.color = surplus >= BASE_SURPLUS ? '#27ae60' : surplus >= 0 ? '#e67e22' : '#c0392b';
     document.getElementById('sum-surplus-pct').textContent = pct;
   }
@@ -721,6 +820,33 @@
     saveData();
   }
 
+  /* ── Forecast rows ── */
+  function addForecastRow(desc = '', amt = '') {
+    const list = document.getElementById('forecast-list');
+    const row  = document.createElement('div');
+    row.className = 'unplanned-row';
+    row.style.cssText = 'border-color:#ede9fe; background:#faf8ff;';
+    const safeDesc = desc.replace(/"/g, '&quot;');
+    row.innerHTML = `
+      <input class="unplanned-desc" type="text" placeholder="What's coming up?" value="${safeDesc}" style="border-color:#ddd6fe;" />
+      <input class="forecast-amt-input math-input" type="text" inputmode="text" placeholder="0.00" value="${amt}" style="border-color:#ddd6fe;" />
+      <button class="del-btn" onclick="removeForecastRow(this)" title="Remove">×</button>
+    `;
+    const amtInput = row.querySelector('.forecast-amt-input');
+    row.querySelector('.unplanned-desc').addEventListener('input', saveData);
+    amtInput.addEventListener('input',   () => { styleInput(amtInput); recalc(); saveData(); });
+    amtInput.addEventListener('blur',    () => { resolveInput(amtInput); recalc(); saveData(); });
+    amtInput.addEventListener('keydown', e => { if (e.key === 'Enter') amtInput.blur(); });
+    list.appendChild(row);
+    recalc();
+  }
+
+  function removeForecastRow(btn) {
+    btn.closest('.unplanned-row').remove();
+    recalc();
+    saveData();
+  }
+
   /* ── Month picker ── */
   document.getElementById('month-picker').addEventListener('change', function () {
     document.getElementById('header-month').textContent = this.value;
@@ -736,14 +862,22 @@
     document.querySelectorAll('.spend-input').forEach(i => spendValues.push(i.value));
 
     const unplanned = [];
-    document.querySelectorAll('.unplanned-row').forEach(row => {
+    document.querySelectorAll('#unplanned-list .unplanned-row').forEach(row => {
       unplanned.push({
         desc: row.querySelector('.unplanned-desc').value,
         amt:  row.querySelector('.unplanned-amt').value
       });
     });
 
-    localStorage.setItem(storageKey(month), JSON.stringify({ spendValues, unplanned }));
+    const forecast = [];
+    document.querySelectorAll('#forecast-list .unplanned-row').forEach(row => {
+      forecast.push({
+        desc: row.querySelector('.unplanned-desc').value,
+        amt:  row.querySelector('.forecast-amt-input').value
+      });
+    });
+
+    localStorage.setItem(storageKey(month), JSON.stringify({ spendValues, unplanned, forecast }));
 
     const ind = document.getElementById('save-indicator');
     ind.classList.add('show');
@@ -752,6 +886,7 @@
 
   function loadData(month) {
     document.getElementById('unplanned-list').innerHTML = '';
+    document.getElementById('forecast-list').innerHTML = '';
     const raw = localStorage.getItem(storageKey(month));
     if (!raw) {
       document.querySelectorAll('.spend-input').forEach(i => { i.value = ''; });
@@ -766,6 +901,9 @@
     }
     if (data.unplanned) {
       data.unplanned.forEach(({ desc, amt }) => addUnplannedRow(desc, amt));
+    }
+    if (data.forecast) {
+      data.forecast.forEach(({ desc, amt }) => addForecastRow(desc, amt));
     }
     recalc();
   }
